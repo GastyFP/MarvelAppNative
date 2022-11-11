@@ -1,50 +1,71 @@
-import { View, Text , StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import { View,StyleSheet, ActivityIndicator, FlatList } from 'react-native'
+import apiParams from '../config.js';
+import axios from 'axios';
+import ComicCard from './ComicCard'
 
 const styles = StyleSheet.create({
   container:{
-    alignItems:'center',
-    justifyContent: 'center',
     backgroundColor: '#151515',
     height: '100%'
   },
-
-  detail:{
-    display:'flex',
-    justifyContent:'space-evenly',
-    alignItems:'center',
-    backgroundColor: '#202020',
-    marginHorizontal: 15,
-    minHeight: '90%',
-    minWidth: '90%',
-    borderColor: '#e62429',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderStyle: 'solid'
-  },
-
-  mainImage: {
-  width: 250,
-  height: 250,
-  },
-  
-  nameText:{
-    fontSize: 24,
-    color: 'white',
-    fontWeight: 'bold',
-    // marginBottom: 10
-  },
-  descriptionText:{
-    color: 'white',
-    paddingHorizontal: 20,
+  comicList:{
+    height: 100,
   }
 })
 
-export default function Comics() {
+export default function Comics({listComics}) {
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const { ts, apikey, hash, baseURL } = apiParams;
+
+  useEffect(() => {
+
+    const promisesArray = listComics.map(c => (
+      axios.get(c.resourceURI, {
+        params: {
+          ts,
+          apikey,
+          hash
+        }      
+      })
+    ));
+    
+    Promise.all(promisesArray)
+      .then(responses => setData(responses.map(r => (
+        r?.data?.data?.results[0]
+      ))))
+      .catch(error => console.error(error))
+      .finally(() => setLoading(false));
+
+  }, []);
+
+  if(!isLoading) console.log('ACA DATA',data)
 
   return (
-    <View>
-      <Text>Comics</Text>
+    <View style={styles.container}>
+      {
+        isLoading ? 
+        ( 
+        <View style={{alignItems:'center', backgroundColor: "#151515" , height: '100%', justifyContent: 'center' }}>
+          <ActivityIndicator size="large" color="#e62429" />
+        </View>
+        ) 
+        :
+        <FlatList style={styles.comicList}
+              contentContainerStyle={{alignItems: 'center'}}
+              data={data}
+              keyExtractor={({ id }) => id.toString()}
+              horizontal
+              renderItem={({ item }) => (
+                <ComicCard 
+                  key={item.id}
+                  name={item.title} 
+                  image={`${item?.thumbnail?.path}.${item.thumbnail.extension}`}  
+                />
+          )}
+        />
+      }
     </View>
   )
 }

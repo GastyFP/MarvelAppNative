@@ -1,4 +1,5 @@
 import { View, FlatList, ActivityIndicator, StyleSheet } from 'react-native'
+import { Searchbar } from 'react-native-paper';
 import React, { useEffect, useState } from 'react'
 import CharacterCard from './CharacterCard'
 import apiParams from '../config.js'
@@ -10,7 +11,7 @@ const styles = StyleSheet.create({
 })
 
 export default function Home() {
-    
+    const [search, setSearch] = useState('');
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
     const { ts, apikey, hash, baseURL } = apiParams;

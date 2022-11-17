@@ -18,8 +18,9 @@ const styles = StyleSheet.create({
     alignItems:'center',
     backgroundColor: '#202020',
     marginHorizontal: 15,
-    minHeight: '90%',
+    minHeight: '80%',
     minWidth: '90%',
+    maxWidth: '90%',
     borderColor: '#e62429',
     borderRadius: 10,
     borderWidth: 1,
@@ -27,8 +28,8 @@ const styles = StyleSheet.create({
   },
 
   mainImage: {
-  width: 250,
-  height: 250,
+  width: 300,
+  height: 300,
   },
   
   nameText:{
@@ -40,6 +41,7 @@ const styles = StyleSheet.create({
   descriptionText:{
     color: 'white',
     paddingHorizontal: 20,
+    marginHorizontal: 10
   }
 
 })

@@ -52,7 +52,7 @@ export default function Comics({listComics}) {
         </View>
         ) 
         :
-        <FlatList style={styles.comicList}
+        <FlatList pagingEnabled style={styles.comicList}
               contentContainerStyle={{alignItems: 'center'}}
               data={data}
               keyExtractor={({ id }) => id.toString()}

@@ -19,7 +19,6 @@ const  Detail = ({route})=> {
     const [data, setData] = useState([]);
     const { ts, apikey, hash, baseURL } = apiParams;
 
-    console.log(data)
 
     useEffect(() => {
         axios.get(`${baseURL}/v1/public/characters/${route.params.id}`, {

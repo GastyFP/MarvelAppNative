@@ -19,7 +19,13 @@ const styles = StyleSheet.create({
         backgroundColor: "#151515" ,
         minHeight: "100%",
         justifyContent: 'center',
+    },
+
+    loaderStyle:{
+        marginVertical: 16,
+        alignItems:'center'
     }
+
 })
 
 
@@ -27,23 +33,33 @@ export default function Home() {
     const [search, setSearch] = useState('');
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
+    const [newData, setNewData] = useState([]);
     const { ts, apikey, hash, baseURL } = apiParams;
+
+    const [moreLoading, setMoreLoading]= useState(true)
+    const [count , setCount] = useState(0)
 
     // hago la request a la Api y me traigo los characters
     useEffect(() => {
+            getCharacters();
+        }, []);
+
+    function getCharacters(){
+        setLoading(true)
         axios.get(`${baseURL}/v1/public/characters`, {
             params: {
             ts,
             apikey,
-            hash
+            hash,
             }
         })
-            .then(response => setData(response.data.data.results))
+            .then(response => {setData(response.data.data.results)})
             .catch(error => console.error(error))
             .finally(() => setLoading(false));
-        }, []);
+    }
 
-    function searchCharacter() {
+    const searchCharacter = () => {
+        setCount(0)
             if(search) {
                 setLoading(true);
                 axios.get(`${baseURL}/v1/public/characters`, {
@@ -61,7 +77,8 @@ export default function Home() {
                 resetCharacters()
             }
         }
-    const resetCharacters = ()=>{
+
+    const resetCharacters = () =>{
         setLoading(true);
         axios.get(`${baseURL}/v1/public/characters`, {
             params: {
@@ -75,6 +92,30 @@ export default function Home() {
             .finally(() => setLoading(false));
     }
 
+    const renderLoader = () =>{
+        return (
+            moreLoading ?
+                <View style={styles.loaderStyle}>
+                <ActivityIndicator size={'small'} color="#e62429"/>
+                </View>:null
+        )
+    }
+    const loadMoreItem = () =>{
+        setCount((count+20))
+        setMoreLoading(true)
+        axios.get(`${baseURL}/v1/public/characters`, {
+            params: {
+                ts,
+                apikey,
+                hash,
+                offset: count
+            }
+        })
+        .then(response => {setNewData(response.data.data.results)})
+        .catch(error => console.error(error))
+        .finally(() => setMoreLoading(false));
+    }
+ 
         return (
         <View style={styles.container}>
             {isLoading 
@@ -93,6 +134,9 @@ export default function Home() {
                     <FlatList
                     data={data}
                     keyExtractor={({ id }) => id.toString()}
+                    // ListFooterComponent={renderLoader}
+                    // onEndReached={loadMoreItem}
+                    // onEndReachedThreshold={0}
                     renderItem={({ item }) => (
                     <CharacterCard
                     id={item.id} 

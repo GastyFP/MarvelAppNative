@@ -40,7 +40,6 @@ export default function Comics({listComics}) {
 
   }, []);
 
-  if(!isLoading) console.log('ACA DATA',data)
 
   return (
     <View style={styles.container}>
